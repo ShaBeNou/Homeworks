@@ -38,9 +38,16 @@ def load_data(hardcoded_path=None):
 
 def Q_1(data):
 
-    reward_df = data.loc[data['reward'] == 1].drop(columns=['reward', 'side', 'reward_prob'])
-    reward_heatmap = pd.DataFrame(reward_df['green'].to_list(), index=reward_df['trial_number'])
+    # Create a heatmap for reward trials
+    reward_df = data.loc[data['reward'] == 1].drop(columns=['reward', 'side', 'reward_prob']) # filter the data
+    reward_heatmap = pd.DataFrame(reward_df['green'].to_list(), index=reward_df['trial_number']) # create new dataframe
     heatmap(reward_heatmap, xticklabels=1000) #TODO: check if mouse poked at time 0 or 1, add titles
+    plt.show()
+
+    # Create a heatmap for omission trials
+    omission_df = data.loc[data['reward'] == 0].drop(columns=['reward', 'side', 'reward_prob']) # filter the data
+    omission_heatmap = pd.DataFrame(omission_df['green'].to_list(), index=omission_df['trial_number']) # create new dataframe
+    heatmap(omission_heatmap, xticklabels=1000)  # plot the heatmap from the new dataframe
     plt.show()
 
 if __name__ == '__main__':
