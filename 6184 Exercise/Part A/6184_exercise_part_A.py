@@ -3,6 +3,8 @@ import sys
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from seaborn import heatmap
 
 
 def load_data(hardcoded_path=None):
@@ -34,12 +36,19 @@ def load_data(hardcoded_path=None):
 
     return data
 
+def Q_1(data):
+
+    reward_df = data.loc[data['reward'] == 1].drop(columns=['reward', 'side', 'reward_prob'])
+    reward_heatmap = pd.DataFrame(reward_df['green'].to_list(), index=reward_df['trial_number'])
+    heatmap(reward_heatmap, xticklabels=1000) #TODO: check if mouse poked at time 0 or 1, add titles
+    plt.show()
+
 if __name__ == '__main__':
     try:
-        data = load_data(hardcoded_path='/6184 Exercise/Python_data.pkl')
+        data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part A/Python_data.pkl')
     except FileNotFoundError as e:
         print(e)
-
+    Q_1(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
                     'please run as a standalone script or within an IDE')
