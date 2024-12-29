@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import ttest_ind
 from seaborn import heatmap
 
 
@@ -47,7 +48,7 @@ def Q_1(data):
 
     # Create a heatmap for omission trials
     plt.figure()
-    omission_df = pd.DataFrame((data.loc[data['reward'] == 0])['green'].to_list(), index=(data.loc[data['reward'] == 1])['trial_number'])
+    omission_df = pd.DataFrame((data.loc[data['reward'] == 0])['green'].to_list(), index=(data.loc[data['reward'] == 0])['trial_number'])
     heatmap(omission_df, xticklabels=1000)  # plot the heatmap from the new dataframe
     plt.show()
 
@@ -55,15 +56,33 @@ def Q_1(data):
     plt.figure()
     avg_rwd = reward_df.mean()
     plt.plot(avg_rwd)
-    #plt.show()
 
     # Create new dataframe for average omission trials and plot it
-    #plt.figure()
     avg_oms = omission_df.mean()
     plt.plot(avg_oms)
     plt.show()
 
-    # --- Find average signal and make a bar plot
+    #  - - -  Find average signal and make a bar plot - - -
+
+    # first, create a dataframe with the mean signal per trial within 1 second of the reward
+    rwd_bar = reward_df.iloc[:,1000:2000].mean(axis=1)
+    oms_bar = omission_df.iloc[:,1000:2000].mean(axis=1)
+
+    # perform a t-test between the two series
+    t_stat, p_value = ttest_ind(rwd_bar, oms_bar)
+
+    # create a bar plot
+    plt.figure()
+    plt.bar(['Reward', 'No reward'], [rwd_bar.mean(), oms_bar.mean()])
+
+    # add the p-value
+    pval_text = f"P-value: {p_value:.3e}"
+    plt.text(0.5, max(rwd_bar.mean(), oms_bar.mean()) + 0.1, pval_text, ha='center', fontsize=10)
+
+    # add labels and title
+    plt.ylabel('Average Value')
+    plt.title('Comparison of Series Averages with P-value')
+    plt.show()
 
 def Q_2(data):
 
@@ -87,7 +106,7 @@ if __name__ == '__main__':
     except FileNotFoundError as e:
         print(e)
     Q_1(data)
-    Q_1(data)
+    Q_2(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
                     'please run as a standalone script or within an IDE')
