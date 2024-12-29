@@ -39,15 +39,46 @@ def load_data(hardcoded_path=None):
 def Q_1(data):
 
     # Create a heatmap for reward trials
-    reward_df = data.loc[data['reward'] == 1].drop(columns=['reward', 'side', 'reward_prob']) # filter the data
-    reward_heatmap = pd.DataFrame(reward_df['green'].to_list(), index=reward_df['trial_number']) # create new dataframe
-    heatmap(reward_heatmap, xticklabels=1000) #TODO: check if mouse poked at time 0 or 1, add titles
+    plt.figure() # new figure
+    # Create a new dataframe object where rows are trials where data['reward']==1 and columns are the corresponding 'green' values
+    reward_df = pd.DataFrame((data.loc[data['reward'] == 1])['green'].to_list(), index=(data.loc[data['reward'] == 1])['trial_number'])
+    heatmap(reward_df, xticklabels=1000) #TODO: check if mouse poked at time 0 or 1, add titles #plot the data
     plt.show()
 
     # Create a heatmap for omission trials
-    omission_df = data.loc[data['reward'] == 0].drop(columns=['reward', 'side', 'reward_prob']) # filter the data
-    omission_heatmap = pd.DataFrame(omission_df['green'].to_list(), index=omission_df['trial_number']) # create new dataframe
-    heatmap(omission_heatmap, xticklabels=1000)  # plot the heatmap from the new dataframe
+    plt.figure()
+    omission_df = pd.DataFrame((data.loc[data['reward'] == 0])['green'].to_list(), index=(data.loc[data['reward'] == 1])['trial_number'])
+    heatmap(omission_df, xticklabels=1000)  # plot the heatmap from the new dataframe
+    plt.show()
+
+    # Create new dataframe for average reward trials and plot it
+    plt.figure()
+    avg_rwd = reward_df.mean()
+    plt.plot(avg_rwd)
+    #plt.show()
+
+    # Create new dataframe for average omission trials and plot it
+    #plt.figure()
+    avg_oms = omission_df.mean()
+    plt.plot(avg_oms)
+    plt.show()
+
+    # --- Find average signal and make a bar plot
+
+def Q_2(data):
+
+    plt.figure()
+    rwd_low = data['green'].loc[(data['reward']==1) & (data['reward_prob']==20)].to_numpy().mean(axis=0)
+    rwd_high = data['green'].loc[(data['reward'] == 1) & (data['reward_prob'] == 80)].to_numpy().mean(axis=0)
+    plt.plot(rwd_low)
+    plt.plot(rwd_high)
+    plt.show()
+
+    plt.figure()
+    oms_low = data['green'].loc[(data['reward'] == 0) & (data['reward_prob'] == 20)].to_numpy().mean(axis=0)
+    oms_high = data['green'].loc[(data['reward'] == 0) & (data['reward_prob'] == 80)].to_numpy().mean(axis=0)
+    plt.plot(oms_low)
+    plt.plot(oms_high)
     plt.show()
 
 if __name__ == '__main__':
@@ -55,6 +86,7 @@ if __name__ == '__main__':
         data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part A/Python_data.pkl')
     except FileNotFoundError as e:
         print(e)
+    Q_1(data)
     Q_1(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
