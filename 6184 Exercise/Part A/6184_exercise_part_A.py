@@ -113,18 +113,34 @@ def Q_1(data):
 
 def Q_2(data):
 
-    plt.figure()
-    rwd_low = data['green'].loc[(data['reward']==1) & (data['reward_prob']==20)].to_numpy().mean(axis=0)
+    # Create arrays for the responses of reward trials - one for low probability and one for high probability
+    rwd_low = data['green'].loc[(data['reward'] == 1) & (data['reward_prob'] == 20)].to_numpy().mean(axis=0)
     rwd_high = data['green'].loc[(data['reward'] == 1) & (data['reward_prob'] == 80)].to_numpy().mean(axis=0)
-    plt.plot(rwd_low)
-    plt.plot(rwd_high)
+
+    # plot the results
+    plt.figure()
+    plt.plot(rwd_low, label='Low probability')
+    plt.plot(rwd_high, label='High probability')
+    plt.xticks(ticks=[0, 1000, 2000, 3000, 4000, 5000, 6000], labels=['-1', '0', '1', '2', '3', '4', '5'])
+    plt.title('Mean photometric signal for reward trials with high and low probabilities')
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Mean photometric signal")
+    plt.legend()
+    plt.tight_layout()
     plt.show()
 
-    plt.figure()
+    # Do the same for omission trials
     oms_low = data['green'].loc[(data['reward'] == 0) & (data['reward_prob'] == 20)].to_numpy().mean(axis=0)
     oms_high = data['green'].loc[(data['reward'] == 0) & (data['reward_prob'] == 80)].to_numpy().mean(axis=0)
-    plt.plot(oms_low)
-    plt.plot(oms_high)
+    plt.figure()
+    plt.plot(oms_low, label='Low probability')
+    plt.plot(oms_high, label='High probability')
+    plt.xticks(ticks=[0, 1000, 2000, 3000, 4000, 5000, 6000], labels=['-1', '0', '1', '2', '3', '4', '5'])
+    plt.title('Mean photometric signal for omission trials with high and low probabilities')
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Mean photometric signal")
+    plt.legend()
+    plt.tight_layout()
     plt.show()
 
 if __name__ == '__main__':
