@@ -143,6 +143,38 @@ def Q_2(data):
     plt.tight_layout()
     plt.show()
 
+    # in order to show these reactions are experience based, I will show the dopaminergic axons response
+    # for reward and omission trials for the first and last 15 trials
+    rwd_first_15 = data['green'].loc[(data['reward'] == 1) &
+                                                (data['reward_prob'] == 20)].to_numpy()[:15].mean(axis=0)
+    rwd_last_15 = data['green'].loc[(data['reward'] == 1) &
+                                    (data['reward_prob'] == 20)].to_numpy()[-15:].mean(axis=0)
+    plt.figure()
+    plt.plot(rwd_first_15, label='first 15 trials')
+    plt.plot(rwd_last_15, label='last 15 trials')
+    plt.xticks(ticks=[0, 1000, 2000, 3000, 4000, 5000, 6000], labels=['-1', '0', '1', '2', '3', '4', '5'])
+    plt.title('Mean photometric signal for the first and last reward trials \n20% chance of reward')
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Mean photometric signal")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    oms_first_15 = data['green'].loc[(data['reward'] == 0) &
+                                     (data['reward_prob'] == 20)].to_numpy()[:15].mean(axis=0)
+    oms_last_15 =  data['green'].loc[(data['reward'] == 0) &
+                                                (data['reward_prob'] == 20)].to_numpy()[-15:].mean(axis=0)
+    plt.figure()
+    plt.plot(oms_first_15, label='first 15 trials')
+    plt.plot(oms_last_15, label='last 15 trials')
+    plt.xticks(ticks=[0, 1000, 2000, 3000, 4000, 5000, 6000], labels=['-1', '0', '1', '2', '3', '4', '5'])
+    plt.title('Mean photometric signal for the first and last omission trials \n20% chance of reward')
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Mean photometric signal")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == '__main__':
     try:
         data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part A/Python_data.pkl')
