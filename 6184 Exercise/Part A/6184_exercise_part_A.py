@@ -40,26 +40,55 @@ def load_data(hardcoded_path=None):
 def Q_1(data):
 
     # Create a heatmap for reward trials
-    plt.figure() # new figure
+    plt.figure()
     # Create a new dataframe object where rows are trials where data['reward']==1 and columns are the corresponding 'green' values
-    reward_df = pd.DataFrame((data.loc[data['reward'] == 1])['green'].to_list(), index=(data.loc[data['reward'] == 1])['trial_number'])
-    heatmap(reward_df, xticklabels=1000) #TODO: check if mouse poked at time 0 or 1, add titles #plot the data
+    reward_df = pd.DataFrame(
+        (data.loc[data['reward'] == 1])['green'].to_list(),
+        index=(data.loc[data['reward'] == 1])['trial_number']
+    )
+    # Plot the heatmap with xticks relative to nose poke
+    heatmap(reward_df, xticklabels=False, cbar_kws={'label': 'Photometry signal'})
+    plt.xticks(ticks=[0,1000,2000,3000,4000,5000,6000], labels=['-1','0','1','2','3','4','5'])
+
+    # Add titles
+    plt.suptitle("Activity of dopaminergic axons relative to nose poke - Reward trials")  # Center title relative to the entire figure
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Trial Number")
+    plt.tight_layout()
     plt.show()
 
     # Create a heatmap for omission trials
     plt.figure()
-    omission_df = pd.DataFrame((data.loc[data['reward'] == 0])['green'].to_list(), index=(data.loc[data['reward'] == 0])['trial_number'])
-    heatmap(omission_df, xticklabels=1000)  # plot the heatmap from the new dataframe
+    omission_df = pd.DataFrame(
+        (data.loc[data['reward'] == 0])['green'].to_list(),
+        index=(data.loc[data['reward'] == 0])['trial_number']
+    )
+    heatmap(omission_df, xticklabels=False, cbar_kws={'label': 'Photometry signal'})
+    plt.xticks(ticks=[0, 1000, 2000, 3000, 4000, 5000, 6000], labels=['-1', '0', '1', '2', '3', '4', '5'])
+
+    plt.suptitle(
+        "Activity of dopaminergic axons relative to nose poke - Omission trials")  # Center title relative to the entire figure
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Trial Number")
+    plt.tight_layout()
     plt.show()
 
     # Create new dataframe for average reward trials and plot it
     plt.figure()
     avg_rwd = reward_df.mean()
-    plt.plot(avg_rwd)
+    plt.plot(avg_rwd, label='Reward Trials')
 
-    # Create new dataframe for average omission trials and plot it
+    # Create new dataframe for average omission trials and plot it on the same graph
     avg_oms = omission_df.mean()
-    plt.plot(avg_oms)
+    plt.plot(avg_oms, label='Omission Trials')
+
+    # Titles, legend
+    plt.xticks(ticks=[0, 1000, 2000, 3000, 4000, 5000, 6000], labels=['-1', '0', '1', '2', '3', '4', '5'])
+    plt.title('Mean photometric signal for reward and omission trials')
+    plt.xlabel("Time relative to nose poke (sec)")
+    plt.ylabel("Mean photometric signal")
+    plt.legend()
+    plt.tight_layout()
     plt.show()
 
     #  - - -  Find average signal and make a bar plot - - -
