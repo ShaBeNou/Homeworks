@@ -102,15 +102,13 @@ def Q_1(data):
 
     # create a bar plot
     plt.figure()
-    plt.bar(['Reward', 'No reward'], [rwd_bar.mean(), oms_bar.mean()])
-
-    # add the p-value
-    pval_text = f"P-value: {p_value:.3e}"
-    plt.text(0.5, max(rwd_bar.mean(), oms_bar.mean()) + 0.1, pval_text, ha='center', fontsize=10)
+    plt.bar(['Reward', 'No reward'], [rwd_bar.mean(), oms_bar.mean()], color=['#1f77b4', '#ff7f0e'])
 
     # add labels and title
-    plt.ylabel('Average Value')
-    plt.title('Comparison of Series Averages with P-value')
+    plt.ylabel('Mean photometric signal')
+    plt.xlabel(f'P-value: {p_value:.3e}')
+    plt.title(f'Mean photometric signal within 1 second of nose poke')
+    plt.tight_layout()
     plt.show()
 
 def Q_2(data):
