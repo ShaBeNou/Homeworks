@@ -87,7 +87,7 @@ def P2Q_3(data, right=25, up=75, fig_size=(15,15), h_space=0.75):
     subplots size and vertical spacing.
     Default values were picked based on what works best on my personal machine.
     """
-
+    # Create a list of tuples for all the conditions
     conditions = [(r_prob, u_prob)for r_prob in np.unique(data['R_prob']) for u_prob in np.unique(data['U_prob'])
         if r_prob != u_prob]
 
@@ -136,6 +136,53 @@ def P2Q_3(data, right=25, up=75, fig_size=(15,15), h_space=0.75):
     plt.tight_layout()
     plt.show()
 
+def P2Q_4(data, colormap="tab20"):
+
+    # Same list of tuples as in P2Q_3
+    conditions = [(r_prob, u_prob) for r_prob in np.unique(data['R_prob']) for u_prob in np.unique(data['U_prob'])
+                  if r_prob != u_prob]
+
+    plt.figure()
+    plt.tight_layout()
+
+    # Use a colormap for different colors
+    cmap = plt.get_cmap(colormap)  # A set of distinct colors
+
+    for idx, (r_prob, u_prob) in enumerate(conditions):
+        # Filter data for the current condition
+        psth = pd.DataFrame(
+            (data.loc[(data['R_prob'] == r_prob) & (data['U_prob'] == u_prob)])['spikes'].to_list()
+        ).mean(axis=0) * 1000
+        smoothed_psth = uniform_filter1d(psth, 100)
+        plt.plot(smoothed_psth, label=f'R={r_prob}, U={u_prob}', color=cmap(idx % 20))
+        plt.legend()
+        plt.title(f'Average smoothed firing rates per condition')
+        plt.xlabel("Time (msec)")
+        plt.ylabel("Firing Rate (spikes/sec)")
+        plt.show()
+
+    # Create two PSTHs - one for all conditions where R_prob>U_prob and vice versa
+    r_psth = pd.DataFrame(
+            (data.loc[data['R_prob']>data['U_prob']])['spikes'].to_list()
+        ).mean(axis=0) * 1000
+    smoothed_r_psth = uniform_filter1d(r_psth, 100)
+
+    u_psth = pd.DataFrame(
+            (data.loc[data['U_prob']>data['R_prob']])['spikes'].to_list()
+        ).mean(axis=0) * 1000
+    smoothed_u_psth = uniform_filter1d(u_psth, 100)
+
+    # plot the smoothed PSTHs
+    plt.figure()
+    plt.plot(smoothed_r_psth, label='R>U')
+    plt.plot(smoothed_u_psth, label='U>R')
+    plt.legend()
+    plt.title(f'Average smoothed firing rates per condition')
+    plt.xlabel("Time (msec)")
+    plt.ylabel("Firing Rate (spikes/sec)")
+    plt.show()
+
+
 if __name__ == '__main__':
     try:
         data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C4886.pkl')
@@ -143,6 +190,8 @@ if __name__ == '__main__':
         print(e)
     P2Q_1(data)
     P2Q_2(data)
+    P2Q_3(data)
+    P2Q_4(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
                     'please run as a standalone script or within an IDE')
