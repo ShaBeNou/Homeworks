@@ -79,28 +79,62 @@ def P2Q_2(data):
     plt.tight_layout()
     plt.show()
 
-    return up_raster, right_raster
+def P2Q_3(data, right=25, up=75, fig_size=(15,15), h_space=0.75):
+    """
+    A function that creates a figure with PSTHs subplots for each condition, and additional PSTH with smoothing.
+    Unlike the other function, this function gets optional arguments.
+    These optional arguments allow choosing a specific PSTH to be plotted with smoothing, and parameters to adjust
+    subplots size and vertical spacing.
+    Default values were picked based on what works best on my personal machine.
+    """
 
-def P2Q_3(up_raster, right_raster):
-    # average the raster dataframes across columns
-    up_psth = up_raster.mean(axis=0)*1000
-    right_psth = right_raster.mean(axis=0) * 1000
+    conditions = [(r_prob, u_prob)for r_prob in np.unique(data['R_prob']) for u_prob in np.unique(data['U_prob'])
+        if r_prob != u_prob]
 
-    # smooth
-    up_psth_smoothed = uniform_filter1d(up_psth, 100)
-    right_psth_smoothed = uniform_filter1d(right_psth, 100)
+    # Define number of rows and columns for the subplots
+    n_conditions = len(conditions)
+    n_rows = int(np.ceil(np.sqrt(n_conditions)))
+    n_cols = int(np.ceil(n_conditions / n_rows))
 
-    # Plot the psth graphs
-    for i in [(up_psth,up_psth_smoothed, 'Up'),(right_psth,right_psth_smoothed, 'Right')]:
-        plt.figure()
-        plt.plot(i[0], label='unsmoothed')
-        plt.plot(i[1], label='smoothed', lw=3.0, color='red')
-        plt.title(f'Average firing rate of substantia nigra pars reticulata neurons - {i[2]} selected trials')
-        plt.xlabel("Time (msec)")
-        plt.ylabel("Firing Rate (spikes/sec)")
-        plt.legend()
-        plt.tight_layout()
-        plt.show()
+    # Create a figure with subplots
+    fig, axes = plt.subplots(nrows=n_rows,ncols=n_cols,figsize=fig_size,sharey=True)
+    axes = axes.flatten()
+
+    # Iterate over the conditions and create subplots
+    for idx, (r_prob, u_prob) in enumerate(conditions):
+        # Filter data for the current condition
+        psth = pd.DataFrame(
+            (data.loc[(data['R_prob'] == r_prob) & (data['U_prob'] == u_prob)])['spikes'].to_list()
+        ).mean(axis=0) * 1000
+
+        # Plot the PSTH in the fitting subplot
+        ax = axes[idx]
+        ax.plot(psth)
+        ax.set_title(f'Right probability ={r_prob}, Up probability={u_prob}')
+        ax.set_xlabel("Time (msec)")
+        if idx % n_cols == 0:  # Only label the y-axis for the first column
+            ax.set_ylabel("Firing Rate (spikes/sec)")
+        ax.tick_params(axis='both', which='major')
+
+    # Show the plots
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=h_space)  # Increase this value for more spacing
+    plt.show()
+
+    # Plot one of the PSTHs again, this time with smoothing
+    plt.figure()
+    new_psth = pd.DataFrame(
+                    (data.loc[(data['R_prob'] == right) & (data['U_prob'] == up)])['spikes'].to_list()
+                ).mean(axis=0)*1000
+    smoothed_psth = uniform_filter1d(new_psth, 100)
+    plt.plot(new_psth, label='unsmoothed')
+    plt.plot(smoothed_psth, label='smoothed', lw=3.0, color='r')
+    plt.legend()
+    plt.title(f'Average firing rate - Right probability={right}, Up probability={up}')
+    plt.xlabel("Time (msec)")
+    plt.ylabel("Firing Rate (spikes/sec)")
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == '__main__':
     try:
@@ -108,7 +142,7 @@ if __name__ == '__main__':
     except FileNotFoundError as e:
         print(e)
     P2Q_1(data)
-    up_raster, right_raster = P2Q_2(data)
+    P2Q_2(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
                     'please run as a standalone script or within an IDE')
