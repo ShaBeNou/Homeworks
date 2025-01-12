@@ -36,6 +36,8 @@ def load_data(hardcoded_path=None):
 
     return data
 
+
+
 def P2Q_1(data):
     # calculate whether up has higher probability for reward over right
     dominantOpt = len(data[data['U_prob']>data['R_prob']])
@@ -49,6 +51,8 @@ def P2Q_1(data):
           f' which are {np.round(dominantOpt*100/len(data), 2)} percent of all trials.')
     print(f'The number of trials where the monkey picked the better probability choice is {betOpt} trials,'
           f' which are {np.round(betOpt*100/len(data), 2)} percent of all trials.')
+
+
 
 def P2Q_2(data):
     # Create a new dataframe representing neural activity for trials where the monkey picked the "up" choice
@@ -78,6 +82,8 @@ def P2Q_2(data):
     plt.ylabel("Trial")
     plt.tight_layout()
     plt.show()
+
+
 
 def P2Q_3(data, right=25, up=75, fig_size=(15,15), h_space=0.75):
     """
@@ -136,6 +142,8 @@ def P2Q_3(data, right=25, up=75, fig_size=(15,15), h_space=0.75):
     plt.tight_layout()
     plt.show()
 
+
+
 def P2Q_4(data, colormap="tab20"):
 
     # Same list of tuples as in P2Q_3
@@ -186,6 +194,29 @@ def P2Q_4(data, colormap="tab20"):
     plt.xlabel("Time (msec)")
     plt.ylabel("Firing Rate (spikes/sec)")
     plt.show()
+
+
+
+def P2Q_5(data):
+    # Same list of tuples as in P2Q_3
+    conditions = [(r_prob, u_prob) for r_prob in np.unique(data['R_prob']) for u_prob in np.unique(data['U_prob'])
+                  if r_prob != u_prob]
+
+    plt.figure()
+    for idx, (r_prob, u_prob) in enumerate(conditions):
+        psth = pd.DataFrame(
+            (data.loc[(data['R_prob'] == r_prob) & (data['U_prob'] == u_prob)])['spikes'].to_list()
+        ).mean(axis=0) * 1000
+        # Now average across time to get a single value for firing rate per condition
+        mean_fr = np.mean(psth) # mean firing rate in spikes/sec
+        if r_prob>u_prob:
+            plt.scatter(r_prob, mean_fr, alpha=0.5, color='#1f77b4', s=40.0)
+        else:
+            plt.scatter(u_prob, mean_fr, alpha=0.5, color='#ff7f0e', s=40.0)
+    plt.legend()
+    plt.show()
+
+
 
 
 if __name__ == '__main__':
