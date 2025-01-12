@@ -3,6 +3,8 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def load_data(hardcoded_path=None):
     """
@@ -47,11 +49,43 @@ def P2Q_1(data):
     print(f'The number of trials where the monkey picked the better probability choice is {betOpt} trials,'
           f' which are {np.round(betOpt*100/len(data), 2)} percent of all trials.')
 
+def P2Q_2(data):
+    # Create a new dataframe representing neural activity for trials where the monkey picked the "up" choice
+    up_raster = pd.DataFrame(
+        (data.loc[data['choice'] == 0])['spikes'].to_list()
+    )
+
+    # Plot this data as a heatmap
+    plt.figure()
+    sns.heatmap(up_raster, xticklabels=100, cbar=False, cmap=['white', 'black'])
+    plt.suptitle(
+        "Spikes per trials of substantia nigra pars reticulata - Up selection trials")
+    plt.xlabel("Time (msec)")
+    plt.ylabel("Trial")
+    plt.tight_layout()
+    plt.show()
+
+    # Exactly same analysis, but for trials where the monkey picked the "right" choice
+    right_raster = pd.DataFrame(
+        (data.loc[data['choice'] == 1])['spikes'].to_list()
+    )
+    plt.figure()
+    sns.heatmap(right_raster, xticklabels=100, cbar=False, cmap=['white', 'black'])
+    plt.suptitle(
+        "Spikes per trials of substantia nigra pars reticulata - Right selection trials")
+    plt.xlabel("Time (msec)")
+    plt.ylabel("Trial")
+    plt.tight_layout()
+    plt.show()
+
+    return up_raster, right_raster
+
 if __name__ == '__main__':
     try:
         data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C4886.pkl')
     except FileNotFoundError as e:
         print(e)
+    P2Q_1(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
                     'please run as a standalone script or within an IDE')
