@@ -193,5 +193,4 @@ if __name__ == '__main__':
     P2Q_3(data)
     P2Q_4(data)
 else:
-    raise Exception('This code is not intended to be run as a module, '
-                    'please run as a standalone script or within an IDE')
+    pass
