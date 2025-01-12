@@ -25,7 +25,7 @@ def load_data(hardcoded_path=None):
         else:
             raise FileNotFoundError(
                 'When running this code as a standalone script data file must be named "Python_data.pkl" and be in '
-                'the same directory as this script!')
+                'the same directory as this script or provided in hardcoded_path!')
     else:
         file_path = hardcoded_path
         if os.path.exists(file_path):
