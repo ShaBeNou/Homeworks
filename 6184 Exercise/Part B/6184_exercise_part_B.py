@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.ndimage import uniform_filter1d
 
 def load_data(hardcoded_path=None):
     """
@@ -59,7 +60,7 @@ def P2Q_2(data):
     plt.figure()
     sns.heatmap(up_raster, xticklabels=100, cbar=False, cmap=['white', 'black'])
     plt.suptitle(
-        "Spikes per trials of substantia nigra pars reticulata - Up selection trials")
+        "Spikes per trials of substantia nigra pars reticulata neurons - Up selected trials")
     plt.xlabel("Time (msec)")
     plt.ylabel("Trial")
     plt.tight_layout()
@@ -72,7 +73,7 @@ def P2Q_2(data):
     plt.figure()
     sns.heatmap(right_raster, xticklabels=100, cbar=False, cmap=['white', 'black'])
     plt.suptitle(
-        "Spikes per trials of substantia nigra pars reticulata - Right selection trials")
+        "Spikes per trials of substantia nigra pars reticulata neurons - Right selected trials")
     plt.xlabel("Time (msec)")
     plt.ylabel("Trial")
     plt.tight_layout()
@@ -80,12 +81,34 @@ def P2Q_2(data):
 
     return up_raster, right_raster
 
+def P2Q_3(up_raster, right_raster):
+    # average the raster dataframes across columns
+    up_psth = up_raster.mean(axis=0)*1000
+    right_psth = right_raster.mean(axis=0) * 1000
+
+    # smooth
+    up_psth_smoothed = uniform_filter1d(up_psth, 100)
+    right_psth_smoothed = uniform_filter1d(right_psth, 100)
+
+    # Plot the psth graphs
+    for i in [(up_psth,up_psth_smoothed, 'Up'),(right_psth,right_psth_smoothed, 'Right')]:
+        plt.figure()
+        plt.plot(i[0], label='unsmoothed')
+        plt.plot(i[1], label='smoothed', lw=3.0, color='red')
+        plt.title(f'Average firing rate of substantia nigra pars reticulata neurons - {i[2]} selected trials')
+        plt.xlabel("Time (msec)")
+        plt.ylabel("Firing Rate (spikes/sec)")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
 if __name__ == '__main__':
     try:
         data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C4886.pkl')
     except FileNotFoundError as e:
         print(e)
     P2Q_1(data)
+    up_raster, right_raster = P2Q_2(data)
 else:
     raise Exception('This code is not intended to be run as a module, '
                     'please run as a standalone script or within an IDE')
