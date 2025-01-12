@@ -2,6 +2,7 @@
 import sys
 import os
 import pandas as pd
+import numpy as np
 
 def load_data(hardcoded_path=None):
     """
@@ -31,6 +32,20 @@ def load_data(hardcoded_path=None):
                 'File not found. Please manually define a valid path to the .pkl file in `hardcoded_path`.')
 
     return data
+
+def P2Q_1(data):
+    # calculate whether up has higher probability for reward over right
+    dominantOpt = len(data[data['U_prob']>data['R_prob']])
+
+    # calculate the number of times the monkey picked the better probability option
+    betOpt = len(data[
+                     ((data['U_prob'] > data['R_prob']) & (data['choice'] == 0)) |
+                     ((data['U_prob'] < data['R_prob']) & (data['choice'] == 1))
+    ])
+    print(f'The number of trials where the up choice was better than right is {dominantOpt} trials,'
+          f' which are {np.round(dominantOpt*100/len(data), 2)} percent of all trials.')
+    print(f'The number of trials where the monkey picked the better probability choice is {betOpt} trials,'
+          f' which are {np.round(betOpt*100/len(data), 2)} percent of all trials.')
 
 if __name__ == '__main__':
     try:
