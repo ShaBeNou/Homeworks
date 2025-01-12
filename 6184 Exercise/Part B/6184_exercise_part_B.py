@@ -145,8 +145,8 @@ def P2Q_4(data, colormap="tab20"):
     plt.figure()
     plt.tight_layout()
 
-    # Use a colormap for different colors
-    cmap = plt.get_cmap(colormap)  # A set of distinct colors
+    # Use a colormap for different colors, check if the colormap is continuous or discrete
+    cmap = plt.get_cmap(colormap)
 
     for idx, (r_prob, u_prob) in enumerate(conditions):
         # Filter data for the current condition
@@ -154,12 +154,17 @@ def P2Q_4(data, colormap="tab20"):
             (data.loc[(data['R_prob'] == r_prob) & (data['U_prob'] == u_prob)])['spikes'].to_list()
         ).mean(axis=0) * 1000
         smoothed_psth = uniform_filter1d(psth, 100)
-        plt.plot(smoothed_psth, label=f'R={r_prob}, U={u_prob}', color=cmap(idx % 20))
-        plt.legend()
-        plt.title(f'Average smoothed firing rates per condition')
-        plt.xlabel("Time (msec)")
-        plt.ylabel("Firing Rate (spikes/sec)")
-        plt.show()
+
+        color = cmap(idx/(len(conditions)-1))  # For discrete colormap, use the modulo to loop over colors
+
+        # Plot the smoothed PSTH with the chosen color
+        plt.plot(smoothed_psth, label=f'R={r_prob}, U={u_prob}', color=color)
+
+    plt.legend()
+    plt.title(f'Average smoothed firing rates per condition')
+    plt.xlabel("Time (msec)")
+    plt.ylabel("Firing Rate (spikes/sec)")
+    plt.show()
 
     # Create two PSTHs - one for all conditions where R_prob>U_prob and vice versa
     r_psth = pd.DataFrame(
