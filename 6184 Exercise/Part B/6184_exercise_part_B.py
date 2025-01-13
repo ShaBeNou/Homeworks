@@ -266,10 +266,16 @@ if __name__ == '__main__':
     P2Q_5(data)
 
     # repeat the analysis of question 5 for the two other neurons as well
-    data = load_data('C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C5838.pkl')
+    try:
+        data = load_data('C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C5838.pkl')
+    except FileNotFoundError as e:
+        print(e)
     P2Q_5(data)
 
-    data = load_data('C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C5843.pkl')
+    try:
+        data = load_data('C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C5843.pkl')
+    except FileNotFoundError as e:
+        print(e)
     P2Q_5(data)
 else:
     pass
