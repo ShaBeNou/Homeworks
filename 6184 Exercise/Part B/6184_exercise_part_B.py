@@ -17,15 +17,23 @@ def load_data(hardcoded_path=None):
 
     # Check if run through IDE:
     if hasattr(sys.modules['__main__'], '__file__'):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(script_dir, 'data/Python_C4886.pkl')
-        if os.path.exists(file_path):
-            data = pd.read_pickle(file_path)
-            print('data loaded')
+        if hardcoded_path is not None:
+            file_path = hardcoded_path
+            if os.path.exists(file_path):
+                data = pd.read_pickle(file_path)
+            else:
+                raise FileNotFoundError(
+                    'File not found. Please manually define a valid path to the .pkl file in `hardcoded_path`.')
         else:
-            raise FileNotFoundError(
-                'When running this code as a standalone script data file must be named "Python_data.pkl" and be in '
-                'the same directory as this script or provided in hardcoded_path!')
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(script_dir, 'data/Python_C4886.pkl')
+            if os.path.exists(file_path):
+                data = pd.read_pickle(file_path)
+                print('data loaded')
+            else:
+                raise FileNotFoundError(
+                    'When running this code as a standalone script data file must be named "Python_data.pkl" and be in '
+                    'the same directory as this script or provided in hardcoded_path!')
     else:
         file_path = hardcoded_path
         if os.path.exists(file_path):
@@ -201,6 +209,7 @@ def P2Q_5(data):
     # Same list of tuples as in P2Q_3
     conditions = [(r_prob, u_prob) for r_prob in np.unique(data['R_prob']) for u_prob in np.unique(data['U_prob'])
                   if r_prob != u_prob]
+    r_over_u, u_over_r = [], []
 
     plt.figure()
     for idx, (r_prob, u_prob) in enumerate(conditions):
@@ -211,8 +220,10 @@ def P2Q_5(data):
         mean_fr = np.mean(psth) # mean firing rate in spikes/sec
         if r_prob>u_prob:
             plt.scatter(r_prob, mean_fr, alpha=0.5, color='#1f77b4', s=40.0)
+            r_over_u.append((r_prob, mean_fr))
         else:
             plt.scatter(u_prob, mean_fr, alpha=0.5, color='#ff7f0e', s=40.0)
+            r_over_u.append((u_prob, mean_fr))
     plt.legend()
     plt.show()
 
@@ -221,7 +232,9 @@ def P2Q_5(data):
 
 if __name__ == '__main__':
     try:
-        data = load_data(hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C4886.pkl')
+        # data = load_data(
+        #     hardcoded_path='C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C4886.pkl')
+        data = load_data()
     except FileNotFoundError as e:
         print(e)
     P2Q_1(data)
