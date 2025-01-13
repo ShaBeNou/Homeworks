@@ -263,5 +263,13 @@ if __name__ == '__main__':
     P2Q_2(data)
     P2Q_3(data)
     P2Q_4(data)
+    P2Q_5(data)
+
+    # repeat the analysis of question 5 for the two other neurons as well
+    data = load_data('C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C5838.pkl')
+    P2Q_5(data)
+
+    data = load_data('C:/Users/97252/PycharmProjects/Homeworks/6184 Exercise/Part B/data/Python_C5843.pkl')
+    P2Q_5(data)
 else:
     pass
