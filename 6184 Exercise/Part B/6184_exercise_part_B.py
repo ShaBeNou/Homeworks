@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.ndimage import uniform_filter1d
+from scipy.stats import linregress
 
 def load_data(hardcoded_path=None):
     """
@@ -212,6 +213,7 @@ def P2Q_5(data):
     r_over_u, u_over_r = [], []
 
     plt.figure()
+    plt.tight_layout()
     for idx, (r_prob, u_prob) in enumerate(conditions):
         psth = pd.DataFrame(
             (data.loc[(data['R_prob'] == r_prob) & (data['U_prob'] == u_prob)])['spikes'].to_list()
@@ -223,8 +225,28 @@ def P2Q_5(data):
             r_over_u.append((r_prob, mean_fr))
         else:
             plt.scatter(u_prob, mean_fr, alpha=0.5, color='#ff7f0e', s=40.0)
-            r_over_u.append((u_prob, mean_fr))
+            u_over_r.append((u_prob, mean_fr))
+
+    # Convert to numpy arrays for regression
+    r_over_u = np.array(r_over_u)
+    slope, intercept, _, _, _ = linregress(r_over_u[:, 0], r_over_u[:, 1])
+    plt.plot(r_over_u[:, 0], slope * r_over_u[:, 0] + intercept, color='#1f77b4',
+             label='Right > Up')
+    equation = f"$y = {slope:.2f}x + {intercept:.2f}$"
+    plt.text(r_over_u[:, 0].mean(), r_over_u[:, 1].mean(), equation, color='#1f77b4', fontsize=10)
+
+    u_over_r = np.array(u_over_r)
+    slope, intercept, _, _, _ = linregress(u_over_r[:, 0], u_over_r[:, 1])
+    plt.plot(u_over_r[:, 0], slope * u_over_r[:, 0] + intercept, color='#ff7f0e',
+             label='Up > Right')
+    equation = f"$y = {slope:.2f}x + {intercept:.2f}$"
+    plt.text(u_over_r[:, 0].mean(), u_over_r[:, 1].mean(), equation, color='#ff7f0e', fontsize=10)
+
+    # Add legend and labels
     plt.legend()
+    plt.xlabel('Probability of the better choice')
+    plt.ylabel('Average Firing Rate (spikes/sec)')
+    plt.title('Firing Rate vs Probability')
     plt.show()
 
 
